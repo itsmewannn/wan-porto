@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Najwan Zalfa Hasibuan — Futuristic Portfolio</title>
+  
+  <!-- Tailwind CSS & React CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      background-color: #08080a;
+      color: #f4f4f5;
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+    @keyframes idleSwing {
+      0%, 100% { transform: perspective(900px) rotateZ(-1.8deg) rotateX(1deg) rotateY(-2deg); }
+      50% { transform: perspective(900px) rotateZ(1.8deg) rotateX(-1deg) rotateY(2deg); }
+    }
+    .lanyard-idle {
+      animation: idleSwing 4.5s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-[#08080a] text-zinc-100 selection:bg-white selection:text-black">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    /* =========================================================================
+       1. PORTFOLIO DATA (NAJWAN ZALFA HASIBUAN)
+       ========================================================================= */
+    const PORTFOLIO_DATA = {
+      personal: {
+        brand: 'najwan.dev',
+        domain: 'www.najwan.vercel.app',
+        fullName: 'Najwan Zalfa Hasibuan',
+        firstName: 'Najwan',
+        middleName: 'Zalfa',
+        lastName: 'Hasibuan',
+        statusBadge: '+ AVAILABLE FOR INTERNSHIP & COLLABORATION',
+        heroTitleLine1: 'UI/UX & SYSTEMS',
+        heroTitleLine2: 'DEVELOPER',
+        typewriterRoles: [
+          'Information Systems Student',
+          'UI/UX Designer',
+          'C++ Logic & Data Structures',
+          'Smart Energy & IoT Enthusiast',
+          'Youth Cultural Ambassador'
+        ],
+        heroBio:
+          'Merancang antarmuka digital modern dan arsitektur logika sistem yang terstruktur, responsif, serta berdampak nyata. Mengubah analisis masalah menjadi solusi teknologi yang fungsional dan elegan.',
+        aboutBio:
+          'Mahasiswa semester 3 Program Studi Sistem Informasi di Institut Teknologi PLN (IPK 3.90/4.00) yang aktif, adaptif, dan memiliki motivasi belajar mandiri yang tinggi. Memiliki perpaduan keahlian dalam desain antarmuka UI/UX, rekayasa struktur data C++, konsep Smart Energy & IoT, serta kepemimpinan dan komunikasi publik melalui berbagai inisiatif organisasi dan pengabdian masyarakat.',
+        quote: '"Turning ideas into clean, modern, and meaningful digital experiences."',
+        location: 'Jakarta Barat, Indonesia',
+        email: 'wanscnd@gmail.com',
+        instagramHandle: '@najwannnz',
+        instagramUrl: 'https://instagram.com/najwannnz',
+        gpa: '3.90',
+        university: 'Institut Teknologi PLN',
+        heroPills: ['UI/UX Design', 'C++ Logic', 'Data Structures', 'Smart Energy IoT', 'System Flowchart']
+      },
+
+      stats: [
+        { id: 'projects', value: '2', label: 'PROJECTS', sublabel: 'Academic & Technical Systems', targetTab: 'projects' },
+        { id: 'certificates', value: '6', label: 'CERTIFICATES & AWARDS', sublabel: 'Verified Trainings & National Honors', targetTab: 'certificates' },
+        { id: 'gpa', value: '3.90', label: 'CURRENT GPA / 4.00', sublabel: 'Information Systems • IT-PLN', targetTab: 'about-timeline' }
+      ],
+
+      education: [
+        {
+          id: 'edu-1',
+          institution: 'Institut Teknologi PLN (IT-PLN)',
+          degree: 'Program Studi S1 Sistem Informasi',
+          period: '2025 – Sekarang (Semester 3)',
+          highlight: 'IPK: 3.90 / 4.00',
+          description: 'Berfokus pada pengembangan sistem informasi, desain antarmuka pengguna (UI/UX), algoritma & struktur data C++, pemodelan alur sistem (flowcharting), serta inovasi teknologi energi cerdas (Smart Energy & IoT).'
+        },
+        {
+          id: 'edu-2',
+          institution: 'SMA Plus Jabal Rahmah Mulia',
+          degree: 'Jurusan MIPA / IPA (Matematika & Ilmu Pengetahuan Alam)',
+          period: '2022 – 2025',
+          highlight: 'Lulusan MIPA',
+          description: 'Aktif dalam pengembangan kepemimpinan siswa, kompetisi bela diri karate tingkat daerah/nasional, serta kegiatan duta kebudayaan dan literasi masyarakat.'
+        }
+      ],
+
+      experience: [
+        {
+          id: 'exp-1',
+          organization: 'Duta Muda Kebudayaan Sumatera Utara',
+          role: 'Duta Kebudayaan & Koordinator Program Pengabdian',
+          period: '2024',
+          badge: 'DMK',
+          highlights: [
+            'Menginisiasi dan memimpin pelaksanaan kegiatan edukasi serta pengabdian masyarakat di Rumah Literasi Ranggi guna meningkatkan minat baca dan wawasan anak-anak.',
+            'Mengoordinasikan rangkaian acara peringatan Hari Pendidikan Nasional melalui serangkaian workshop interaktif dan motivasi belajar aktif.',
+            'Terlibat aktif dalam kepanitiaan Festival Seni dan Budaya guna melestarikan serta mempromosikan warisan kebudayaan daerah.'
+          ]
+        }
+      ],
+
+      projects: [
+        {
+          id: 'pawangvolt',
+          title: 'Pawangvolt: Smart Residential Energy Management System',
+          year: '2026',
+          role: 'UI/UX Designer',
+          shortDesc: 'Perancangan antarmuka sistem monitoring energi rumah tangga berbasis IoT secara real-time dengan estimasi tagihan berkala dan peringatan beban berlebih.',
+          overview: 'Pawangvolt adalah inovasi sistem manajemen energi residensial cerdas berbasis Internet of Things (IoT) yang dirancang untuk membantu penghuni rumah memantau konsumsi daya listrik secara real-time.',
+          problem: 'Banyak pengguna rumah tangga kesulitan memantau penggunaan daya listrik harian secara transparan dan sering mengalami pemutusan arus mendadak akibat beban listrik berlebih.',
+          solution: 'Merancang antarmuka dashboard UI/UX yang bersih, intuitif, dan responsif untuk memvisualisasikan metrik tegangan/arus secara real-time.',
+          keyFeatures: ['Dashboard Monitoring Konsumsi Energi IoT Real-Time', 'Fitur Estimasi Tagihan Listrik Berkala', 'Sistem Peringatan Dini Beban Berlebih'],
+          technologies: ['UI/UX Design', 'Figma', 'Smart Energy Concept', 'IoT Dashboard UX'],
+          thumbnail: 'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1000&q=80'
+        },
+        {
+          id: 'cpp-queue-system',
+          title: 'Sistem Antrean Digital Servis Kendaraan Berbasis C++',
+          year: '2026',
+          role: 'Technical Researcher & Logic Designer',
+          shortDesc: 'Perancangan logika algoritma, flowchart sistem, dan analisis efisiensi memori dinamis menggunakan struktur data Single Linked List berprinsip FIFO.',
+          overview: 'Proyek riset teknis dan perancangan logika pemrograman menggunakan bahasa C++ untuk menangani manajemen antrean layanan bengkel/servis kendaraan secara digital.',
+          problem: 'Pencatatan antrean servis kendaraan secara manual sering memicu pemborosan memori atau keterbatasan kapasitas saat terjadi lonjakan jumlah kendaraan.',
+          solution: 'Mengimplementasikan struktur data dinamis Single Linked List dengan prinsip First-In, First-Out (FIFO) di C++.',
+          keyFeatures: ['Implementasi Struktur Data Single Linked List FIFO', 'Manajemen Alokasi Memori Dinamis (Pointer & Node)', 'Perancangan Flowchart Logika Sistem'],
+          technologies: ['C++', 'Data Structures', 'Single Linked List', 'FIFO Queue Logic', 'System Flowcharting'],
+          thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1000&q=80'
+        }
+      ],
+
+      certificates: [
+        {
+          id: 'cert-bees',
+          title: 'Basic English Education Standardization (BEES)',
+          issuer: 'Language Development Center (LDC) — IT-PLN',
+          date: 'April 2026',
+          badge: 'Score: 84 / Level B1',
+          description: 'Sertifikasi standardisasi kemampuan Bahasa Inggris akademik dan profesional.',
+          image: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=900&q=80'
+        },
+        {
+          id: 'cert-ai-agent',
+          title: 'Workshop SAQ: Build Your First AI Agent',
+          issuer: 'Workshop Teknologi AI',
+          date: '2026',
+          badge: 'Peserta',
+          description: 'Pelatihan intensif mengenai konsep dasar dan praktik merancang AI Agent otonom.',
+          image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=900&q=80'
+        },
+        {
+          id: 'cert-blockshield',
+          title: 'Workshop Crafting the Blockshield: Blockchain Security',
+          issuer: 'Cybersecurity Workshop',
+          date: '2026',
+          badge: 'Peserta',
+          description: 'Eksplorasi teknis mengenai infrastruktur terdesentralisasi dan keamanan blockchain.',
+          image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=900&q=80'
+        },
+        {
+          id: 'cert-visual-intel',
+          title: 'Workshop Real-Time Visual Intelligence System',
+          issuer: 'Computer Vision Workshop',
+          date: '2026',
+          badge: 'Peserta',
+          description: 'Pengembangan wawasan teknis terkait sistem pemrosesan visual real-time.',
+          image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=900&q=80'
+        }
+      ],
+
+      awards: [
+        {
+          id: 'award-karate',
+          title: 'Juara 2 (Medali Perak) — Mahasiswa Kumite -67 Kg Putra',
+          organizer: 'Kejurnas Karate Budi Luhur University (PB FORKI)',
+          date: 'Februari 2026',
+          badge: 'Silver Medal',
+          description: 'Meraih medali perak tingkat Nasional pada kategori Mahasiswa Kumite -67 Kg Putra.',
+          image: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=900&q=80'
+        },
+        {
+          id: 'award-duta',
+          title: 'Top 5 & Duta Muda Sumatera Utara',
+          organizer: 'Duta Muda Kebudayaan Sumatera Utara',
+          date: '2024',
+          badge: 'Top 5 Finalist',
+          description: 'Terpilih sebagai Top 5 Duta Muda Kebudayaan Sumatera Utara dan Koordinator Pengabdian.',
+          image: 'https://images.unsplash.com/photo-1531545514256-b1400bc00f31?auto=format&fit=crop&w=900&q=80'
+        }
+      ],
+
+      techStack: [
+        { name: 'C++', category: 'Programming Language', badge: 'C++', color: '#38BDF8' },
+        { name: 'Data Structures', category: 'Queue & Linked List', badge: 'FIFO', color: '#818CF8' },
+        { name: 'UI/UX Design', category: 'Interface & Experience', badge: 'UX', color: '#F472B6' },
+        { name: 'Figma', category: 'Design & Prototyping', badge: 'FG', color: '#FB7185' },
+        { name: 'System Flowchart', category: 'Architecture & Logic', badge: 'FLOW', color: '#34D399' },
+        { name: 'Smart Energy IoT', category: 'Domain Concept', badge: 'IoT', color: '#FBBF24' },
+        { name: 'Public Speaking', category: 'Leadership & Soft Skill', badge: 'COMM', color: '#F8FAFC' },
+        { name: 'English (CEFR B1)', category: 'BEES Score: 84', badge: 'B1', color: '#60A5FA' }
+      ],
+
+      initialComments: [
+        {
+          id: 'c-pinned',
+          name: 'Najwan Zalfa H',
+          text: 'Terima kasih sudah mampir di portfolio saya! Silakan tinggalkan pesan atau sapaan di bawah.',
+          pinned: true,
+          likes: 5,
+          likedByMe: false,
+          timestamp: 'Pinned'
+        }
+      ]
+    };
+
+    const STUDIO_PORTRAIT_FALLBACK = "data:image/svg+xml;utf8," + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="600" height="750">
+        <defs>
+          <radialGradient id="bgGlow" cx="50%" cy="38%" r="60%">
+            <stop offset="0%" stop-color="#3f3f46"/>
+            <stop offset="55%" stop-color="#18181b"/>
+            <stop offset="100%" stop-color="#09090b"/>
+          </radialGradient>
+          <linearGradient id="suitGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f4f4f5"/>
+            <stop offset="100%" stop-color="#a1a1aa"/>
+          </linearGradient>
+        </defs>
+        <rect width="600" height="750" fill="url(#bgGlow)"/>
+        <g stroke="#ffffff" stroke-opacity="0.04" stroke-width="1">
+          <line x1="0" y1="150" x2="600" y2="150"/>
+          <line x1="0" y1="300" x2="600" y2="300"/>
+          <line x1="0" y1="450" x2="600" y2="450"/>
+          <line x1="0" y1="600" x2="600" y2="600"/>
+          <line x1="150" y1="0" x2="150" y2="750"/>
+          <line x1="300" y1="0" x2="300" y2="750"/>
+          <line x1="450" y1="0" x2="450" y2="750"/>
+        </g>
+        <circle cx="300" cy="255" r="88" fill="#d4d4d8"/>
+        <path d="M210 235 C210 155, 390 155, 390 235 C375 195, 320 190, 300 205 C280 190, 225 195, 210 235 Z" fill="#18181b"/>
+        <rect x="272" y="330" width="56" height="55" rx="14" fill="#a1a1aa"/>
+        <path d="M115 750 C115 510, 195 415, 300 415 C405 415, 485 510, 485 750 Z" fill="url(#suitGrad)"/>
+        <path d="M258 415 Q300 455 342 415 L330 390 Q300 420 270 390 Z" fill="#18181b"/>
+        <polygon points="268,382 300,432 238,442" fill="#ffffff"/>
+        <polygon points="332,382 300,432 362,442" fill="#ffffff"/>
+        <rect x="0" y="650" width="600" height="100" fill="#09090b" fill-opacity="0.78"/>
+        <text x="300" y="695" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="22" font-weight="800" letter-spacing="4">NAJWAN ZALFA H.</text>
+        <text x="300" y="722" text-anchor="middle" fill="#a1a1aa" font-family="monospace" font-size="13" letter-spacing="2">KLIK "UPLOAD FOTO CV" UNTUK GANTI FOTO</text>
+      </svg>
+    `);
+
+    /* =========================================================================
+       2. INTRO SCREEN COMPONENT
+       ========================================================================= */
+    function IntroScreen({ onComplete }) {
+      const [progress, setProgress] = useState(0);
+      const [exiting, setExiting] = useState(false);
+
+      useEffect(() => {
+        const interval = setInterval(() => {
+          setProgress((prev) => {
+            if (prev >= 100) {
+              clearInterval(interval);
+              setTimeout(() => {
+                setExiting(true);
+                setTimeout(onComplete, 450);
+              }, 200);
+              return 100;
+            }
+            return prev + 5;
+          });
+        }, 40);
+        return () => clearInterval(interval);
+      }, [onComplete]);
+
+      return (
+        <div className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#050507] transition-all duration-500 ${exiting ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
+          <div className="text-center px-6">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-wider text-white">Welcome To My</h1>
+            <h2 className="mt-2 text-3xl sm:text-5xl md:text-6xl font-black tracking-wider bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">Portfolio Website</h2>
+            <p className="mt-5 font-mono text-xs sm:text-sm tracking-[0.25em] text-zinc-400">{PORTFOLIO_DATA.personal.domain}</p>
+            <div className="mt-7 w-56 sm:w-64 mx-auto">
+              <div className="h-[2px] w-full bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-full bg-white transition-all duration-75" style={{ width: `${progress}%` }} />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+                <span>LOADING</span>
+                <span className="text-zinc-300">{progress}%</span>
+              </div>
+            </div>
+            <button onClick={() => { setExiting(true); setTimeout(onComplete, 250); }} className="mt-8 px-4 py-1.5 rounded-full text-xs font-mono text-zinc-400 hover:text-white border border-white/10 bg-white/[0.02]">
+              Skip Intro →
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    /* =========================================================================
+       3. INTERACTIVE 3D HANGING LANYARD ID CARD (SWING & TILT PHYSICS)
+       ========================================================================= */
+    function HangingLanyardCard({ avatarSrc, isMonochrome, onToggleMonochrome, onUploadClick }) {
+      const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, swingZ: 0, translateY: 0 });
+      const [isHovered, setIsHovered] = useState(false);
+
+      const handlePointerMove = (clientX, clientY, currentTarget) => {
+        const rect = currentTarget.getBoundingClientRect();
+        const x = (clientX - rect.left) / rect.width - 0.5;
+        const y = (clientY - rect.top) / rect.height - 0.5;
+        setTilt({
+          rotateX: -y * 22,
+          rotateY: x * 28,
+          swingZ: -x * 10,
+          translateY: Math.max(0, y * 14)
+        });
+      };
+
+      const handleMouseMove = (e) => {
+        handlePointerMove(e.clientX, e.clientY, e.currentTarget);
+      };
+
+      const handleTouchMove = (e) => {
+        if (e.touches && e.touches[0]) {
+          handlePointerMove(e.touches[0].clientX, e.touches[0].clientY, e.currentTarget);
+        }
+      };
+
+      const handlePointerLeave = () => {
+        setIsHovered(false);
+        setTilt({ rotateX: 0, rotateY: 0, swingZ: 0, translateY: 0 });
+      };
+
+      return (
+        <div className="relative flex flex-col items-center select-none pt-0">
+          {/* Interactive Lanyard Assembly Hanging from Top Origin */}
+          <div
+            className={`flex flex-col items-center origin-top cursor-grab active:cursor-grabbing ${
+              !isHovered ? 'lanyard-idle' : 'transition-transform duration-150 ease-out'
+            }`}
+            style={
+              isHovered
+                ? {
+                    transform: `perspective(900px) translateY(${tilt.translateY}px) rotateZ(${tilt.swingZ}deg) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`
+                  }
+                : undefined
+            }
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handlePointerLeave}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handlePointerLeave}
+          >
+            {/* Vertical Black Strap with "ID CARD" & "IT-PLN" text */}
+            <div className="w-7 h-28 sm:h-36 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 border-x border-white/15 flex flex-col items-center justify-around py-2 shadow-xl">
+              <span className="text-[8px] font-mono tracking-[0.25em] text-zinc-400 -rotate-90 whitespace-nowrap">
+                ID CARD
+              </span>
+              <span className="text-[8px] font-mono tracking-[0.25em] text-zinc-400 -rotate-90 whitespace-nowrap">
+                IT-PLN
+              </span>
+            </div>
+
+            {/* Lanyard Metal Clip & Holder */}
+            <div className="w-10 h-3 rounded-sm bg-zinc-800 border border-white/20 shadow-md" />
+            <div className="w-4 h-4 rounded-b-md bg-zinc-700 border-x border-b border-white/25 -mt-0.5" />
+
+            {/* White-Framed ID Card Badge */}
+            <div className="relative -mt-1 w-64 sm:w-72 rounded-2xl bg-zinc-100 p-3 pt-4 shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_35px_rgba(255,255,255,0.08)] border border-white transition-shadow duration-300">
+              {/* Card Slot Punch Hole at Top Center */}
+              <div className="w-12 h-2.5 mx-auto mb-3 rounded-full bg-zinc-900 border border-zinc-400/40" />
+
+              {/* Portrait Image Container */}
+              <div className="relative w-full h-72 sm:h-80 rounded-xl overflow-hidden bg-zinc-950 group">
+                <img
+                  src={avatarSrc}
+                  alt={PORTFOLIO_DATA.personal.fullName}
+                  className={`w-full h-full object-cover object-top transition-all duration-500 ${
+                    isMonochrome ? 'grayscale contrast-125 brightness-95' : ''
+                  } ${isHovered ? 'scale-105' : 'scale-100'}`}
+                />
+
+                {/* Dynamic Glare Reflection on Tilt */}
+                <div
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+                  style={{
+                    opacity: isHovered ? 0.22 : 0,
+                    background: `radial-gradient(circle at ${50 + tilt.rotateY * 1.5}% ${50 - tilt.rotateX * 1.5}%, rgba(255,255,255,0.8), transparent 60%)`
+                  }}
+                />
+
+                {/* Bottom Vignette inside Card */}
+                <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-3.5 flex flex-col justify-end">
+                  <p className="font-mono text-[10px] tracking-[0.2em] text-zinc-300 uppercase">
+                    INFORMATION SYSTEMS
+                  </p>
+                  <h3 className="text-sm font-black text-white tracking-wide truncate">
+                    {PORTFOLIO_DATA.personal.fullName}
+                  </h3>
+                </div>
+
+                {/* Hover Action Overlay to Upload Photo or Toggle B&W Filter */}
+                <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUploadClick();
+                    }}
+                    className="px-2.5 py-1.5 rounded-lg bg-black/85 hover:bg-black text-white text-[11px] font-mono border border-white/20 shadow-lg"
+                  >
+                    📷 Foto
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleMonochrome();
+                    }}
+                    className="px-2 py-1.5 rounded-lg bg-black/85 hover:bg-black text-zinc-200 text-[11px] font-mono border border-white/20 shadow-lg"
+                  >
+                    {isMonochrome ? 'B&W' : 'Color'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Helper Buttons Below Lanyard */}
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+            <button
+              type="button"
+              onClick={onUploadClick}
+              className="px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.1] border border-white/15 text-[11px] font-mono text-zinc-300 transition"
+            >
+              📷 Upload Foto CV
+            </button>
+            <button
+              type="button"
+              onClick={onToggleMonochrome}
+              className="px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.1] border border-white/15 text-[11px] font-mono text-zinc-400 hover:text-white transition"
+            >
+              ⚡ Filter: {isMonochrome ? 'Monokrom (Video)' : 'Warna Asli'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    /* =========================================================================
+       4. MAIN APP COMPONENT
+       ========================================================================= */
+    function App() {
+      const [showIntro, setShowIntro] = useState(true);
+      const [activeSection, setActiveSection] = useState('home');
+      const [activeTab, setActiveTab] = useState('projects');
+      const [selectedProject, setSelectedProject] = useState(null);
+      const [selectedCert, setSelectedCert] = useState(null);
+      const [avatarSrc, setAvatarSrc] = useState(() => {
+        try {
+          return localStorage.getItem('najwan_cv_avatar') || STUDIO_PORTRAIT_FALLBACK;
+        } catch (e) {
+          return STUDIO_PORTRAIT_FALLBACK;
+        }
+      });
+      const [isMonochrome, setIsMonochrome] = useState(true);
+      const fileInputRef = useRef(null);
+
+      const [roleIdx, setRoleIdx] = useState(0);
+      const [typedRole, setTypedRole] = useState('');
+      const [isDeleting, setIsDeleting] = useState(false);
+
+      const [comments, setComments] = useState(PORTFOLIO_DATA.initialComments);
+      const [commentForm, setCommentForm] = useState({ name: '', text: '' });
+
+      useEffect(() => {
+        const roles = PORTFOLIO_DATA.personal.typewriterRoles;
+        const currentFull = roles[roleIdx % roles.length];
+        const timer = setTimeout(() => {
+          if (!isDeleting && typedRole === currentFull) {
+            setTimeout(() => setIsDeleting(true), 1300);
+          } else if (isDeleting && typedRole === '') {
+            setIsDeleting(false);
+            setRoleIdx(prev => (prev + 1) % roles.length);
+          } else {
+            setTypedRole(currentFull.substring(0, typedRole.length + (isDeleting ? -1 : 1)));
+          }
+        }, isDeleting ? 40 : 85);
+        return () => clearTimeout(timer);
+      }, [typedRole, isDeleting, roleIdx]);
+
+      const handleAvatarUpload = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          setAvatarSrc(reader.result);
+          try {
+            localStorage.setItem('najwan_cv_avatar', reader.result);
+          } catch (err) {}
+        };
+        reader.readAsDataURL(file);
+      };
+
+      const scrollTo = (id) => {
+        setSelectedProject(null);
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      return (
+        <div className="min-h-screen bg-[#08080a] text-zinc-100 relative font-sans">
+          {/* Architectural Dark Grid Background */}
+          <div
+            className="fixed inset-0 pointer-events-none z-0"
+            style={{
+              backgroundImage:
+                'linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px)',
+              backgroundSize: '40px 40px'
+            }}
+          />
+          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+          {showIntro && <IntroScreen onComplete={() => setShowIntro(false)} />}
+
+          {/* NAVBAR */}
+          <header className="fixed top-4 inset-x-0 z-40 px-4">
+            <div className="max-w-6xl mx-auto h-14 px-5 rounded-2xl bg-zinc-950/80 backdrop-blur-xl border border-white/10 flex items-center justify-between shadow-2xl">
+              <span className="font-mono text-sm font-bold text-white">{PORTFOLIO_DATA.personal.brand}</span>
+              <nav className="flex items-center gap-6">
+                {['home', 'about', 'portfolio', 'contact'].map((id) => (
+                  <button key={id} onClick={() => scrollTo(id)} className={`text-xs uppercase font-medium transition ${activeSection === id ? 'text-white font-bold' : 'text-zinc-400 hover:text-white'}`}>
+                    {id}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </header>
+
+          <main className="max-w-6xl mx-auto px-4 pt-28 pb-20 space-y-32">
+            {/* HERO SECTION */}
+            <section id="home" className="min-h-[80vh] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="lg:col-span-7 space-y-6">
+                <span className="font-mono text-xs tracking-widest text-zinc-400">{PORTFOLIO_DATA.personal.statusBadge}</span>
+                <div className="space-y-1">
+                  <h1 className="text-4xl sm:text-6xl font-black text-white uppercase">{PORTFOLIO_DATA.personal.heroTitleLine1}</h1>
+                  <h2 className="text-4xl sm:text-6xl font-black bg-gradient-to-r from-white via-zinc-300 to-zinc-500 bg-clip-text text-transparent uppercase">{PORTFOLIO_DATA.personal.heroTitleLine2}</h2>
+                </div>
+                <div className="h-8 flex items-center text-lg text-zinc-200 font-mono">
+                  <span>{typedRole}</span>
+                  <span className="ml-1 w-2 h-6 bg-white animate-pulse" />
+                </div>
+                <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">{PORTFOLIO_DATA.personal.heroBio}</p>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {PORTFOLIO_DATA.personal.heroPills.map(p => (
+                    <span key={p} className="px-3 py-1 rounded-full bg-white/5 border border-white/15 font-mono text-xs text-zinc-300">{p}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="lg:col-span-5 flex justify-center">
+                <HangingLanyardCard avatarSrc={avatarSrc} isMonochrome={isMonochrome} onToggleMonochrome={() => setIsMonochrome(!isMonochrome)} onUploadClick={() => fileInputRef.current?.click()} />
+              </div>
+            </section>
+
+            {/* ABOUT SECTION */}
+            <section id="about" className="pt-10 border-t border-white/10 space-y-12">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                <div className="lg:col-span-7 space-y-6">
+                  <span className="font-mono text-xs tracking-widest text-zinc-400">ABOUT ME</span>
+                  <h2 className="text-4xl sm:text-5xl font-black text-white">{PORTFOLIO_DATA.personal.fullName}</h2>
+                  <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">{PORTFOLIO_DATA.personal.aboutBio}</p>
+                </div>
+                <div className="lg:col-span-5 flex flex-col items-center">
+                  <div className="w-64 h-64 rounded-full p-2 bg-gradient-to-b from-white/20 to-white/5 border border-white/15 overflow-hidden">
+                    <img src={avatarSrc} alt="Najwan" className={`w-full h-full object-cover object-top ${isMonochrome ? 'grayscale contrast-125' : ''}`} />
+                  </div>
+                  <button onClick={() => fileInputRef.current?.click()} className="mt-4 px-4 py-2 rounded-xl bg-white/5 border border-white/15 text-xs font-mono text-zinc-300 hover:bg-white/10">Upload Foto CV</button>
+                </div>
+              </div>
+
+              {/* EDUCATION TIMELINE */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6">
+                <div className="space-y-4">
+                  <h3 className="font-mono text-xs tracking-widest text-zinc-400 font-bold">RIWAYAT PENDIDIKAN</h3>
+                  {PORTFOLIO_DATA.education.map(edu => (
+                    <div key={edu.id} className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
+                      <div className="flex justify-between text-xs font-mono text-zinc-400">
+                        <span>{edu.period}</span>
+                        <span className="text-white">{edu.highlight}</span>
+                      </div>
+                      <h4 className="text-lg font-bold text-white">{edu.institution}</h4>
+                      <p className="text-xs text-zinc-300">{edu.degree}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-4">
+                  <h3 className="font-mono text-xs tracking-widest text-zinc-400 font-bold">ORGANISASI & PENGABDIAN</h3>
+                  {PORTFOLIO_DATA.experience.map(exp => (
+                    <div key={exp.id} className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                      <div className="flex justify-between text-xs font-mono text-zinc-400">
+                        <span>{exp.period}</span>
+                        <span>{exp.badge}</span>
+                      </div>
+                      <h4 className="text-lg font-bold text-white">{exp.organization}</h4>
+                      <p className="text-xs text-zinc-300">{exp.role}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* PORTFOLIO SECTION */}
+            <section id="portfolio" className="pt-10 border-t border-white/10 space-y-8">
+              <div className="text-center max-w-xl mx-auto">
+                <h2 className="text-3xl sm:text-4xl font-black text-white">Portfolio Showcase</h2>
+                <p className="text-xs text-zinc-400 mt-2">Explore my academic & technical projects, certificates, and achievements.</p>
+              </div>
+
+              <div className="flex justify-center gap-2 p-1.5 rounded-2xl bg-white/[0.02] border border-white/10 max-w-xl mx-auto">
+                {['projects', 'certificates', 'awards', 'tech'].map((tab) => (
+                  <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2.5 px-5 rounded-xl text-xs font-semibold capitalize transition ${activeTab === tab ? 'bg-white/10 text-white border border-white/20' : 'text-zinc-400 hover:text-white'}`}>
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {activeTab === 'projects' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {PORTFOLIO_DATA.projects.map(proj => (
+                    <div key={proj.id} className="rounded-2xl bg-white/[0.02] border border-white/10 overflow-hidden flex flex-col">
+                      <div className="h-52 overflow-hidden bg-zinc-900">
+                        <img src={proj.thumbnail} alt={proj.title} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500" />
+                      </div>
+                      <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                          <span className="font-mono text-[10px] text-zinc-400">{proj.role} • {proj.year}</span>
+                          <h3 className="text-lg font-bold text-white mt-1">{proj.title}</h3>
+                          <p className="text-xs text-zinc-400 mt-2 line-clamp-2">{proj.shortDesc}</p>
+                        </div>
+                        <button onClick={() => setSelectedProject(proj)} className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white hover:text-black text-white font-semibold text-xs border border-white/15 transition">Details →</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'certificates' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {PORTFOLIO_DATA.certificates.map(cert => (
+                    <div key={cert.id} onClick={() => setSelectedCert(cert)} className="cursor-pointer rounded-2xl bg-white/[0.02] border border-white/10 p-4 hover:border-white/30 transition">
+                      <div className="h-44 rounded-xl overflow-hidden bg-zinc-900 mb-3">
+                        <img src={cert.image} alt={cert.title} className="w-full h-full object-cover" />
+                      </div>
+                      <p className="font-mono text-[11px] text-zinc-400">{cert.issuer} • {cert.date}</p>
+                      <h4 className="text-base font-bold text-white mt-1">{cert.title}</h4>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'awards' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {PORTFOLIO_DATA.awards.map(aw => (
+                    <div key={aw.id} className="rounded-2xl bg-white/[0.02] border border-white/15 p-6 space-y-3">
+                      <span className="px-3 py-1 rounded-full bg-white text-black font-mono text-[10px] font-bold">🏆 {aw.badge}</span>
+                      <h4 className="text-lg font-bold text-white mt-2">{aw.title}</h4>
+                      <p className="text-xs text-zinc-300 font-medium">{aw.organizer} ({aw.date})</p>
+                      <p className="text-xs text-zinc-400 leading-relaxed">{aw.description}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'tech' && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {PORTFOLIO_DATA.techStack.map(t => (
+                    <div key={t.name} className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 text-center">
+                      <div className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center font-mono text-sm font-black mb-2" style={{ backgroundColor: `${t.color}15`, color: t.color }}>{t.badge}</div>
+                      <h4 className="text-xs font-bold text-white">{t.name}</h4>
+                      <p className="text-[10px] text-zinc-500">{t.category}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* CONTACT SECTION */}
+            <section id="contact" className="pt-10 border-t border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-6 p-6 rounded-3xl bg-white/[0.02] border border-white/10 space-y-4">
+                <h3 className="text-xl font-bold text-white">Hubungi Saya</h3>
+                <p className="text-xs text-zinc-400">Feel free to reach out for collaboration or inquiries.</p>
+                <div className="space-y-2 pt-2 text-xs font-mono text-zinc-300">
+                  <p>Email: {PORTFOLIO_DATA.personal.email}</p>
+                  <p>Instagram: {PORTFOLIO_DATA.personal.instagramHandle}</p>
+                  <p>Lokasi: {PORTFOLIO_DATA.personal.location}</p>
+                </div>
+              </div>
+              <div className="lg:col-span-6 p-6 rounded-3xl bg-white/[0.02] border border-white/10 space-y-4">
+                <h3 className="text-xl font-bold text-white">Guestbook Comments</h3>
+                <div className="space-y-2">
+                  <input type="text" placeholder="Your Name" value={commentForm.name} onChange={e => setCommentForm({...commentForm, name: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white" />
+                  <textarea placeholder="Your Comment" rows="2" value={commentForm.text} onChange={e => setCommentForm({...commentForm, text: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white" />
+                  <button onClick={() => { if(commentForm.name && commentForm.text) { setComments([{id: Date.now(), name: commentForm.name, text: commentForm.text, pinned:false, likes:0, timestamp:'Baru saja'}, ...comments]); setCommentForm({name:'', text:''}); }}} className="w-full py-2.5 rounded-xl bg-white text-black font-bold text-xs">Post Comment</button>
+                </div>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {comments.map(c => (
+                    <div key={c.id} className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
+                      <span className="font-bold text-white">{c.name}</span>: <span className="text-zinc-300">{c.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </main>
+
+          {/* PROJECT MODAL */}
+          {selectedProject && (
+            <div onClick={() => setSelectedProject(null)} className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+              <div onClick={e => e.stopPropagation()} className="max-w-2xl w-full rounded-2xl bg-[#0e0e12] border border-white/20 p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold text-white">{selectedProject.title}</h3>
+                  <button onClick={() => setSelectedProject(null)} className="px-3 py-1 rounded-lg bg-white/10 text-xs">✕</button>
+                </div>
+                <img src={selectedProject.thumbnail} alt="" className="w-full h-56 object-cover rounded-xl" />
+                <p className="text-xs text-zinc-300 leading-relaxed">{selectedProject.overview}</p>
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Key Features:</h4>
+                  {selectedProject.keyFeatures.map((f, i) => <p key={i} className="text-xs text-zinc-400">• {f}</p>)}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CERTIFICATE LIGHTBOX */}
+          {selectedCert && (
+            <div onClick={() => setSelectedCert(null)} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+              <div onClick={e => e.stopPropagation()} className="max-w-3xl w-full bg-[#0e0e12] border border-white/20 rounded-2xl overflow-hidden p-4 space-y-3">
+                <img src={selectedCert.image} alt="" className="w-full max-h-[60vh] object-contain bg-black rounded-lg" />
+                <h3 className="text-base font-bold text-white">{selectedCert.title}</h3>
+                <p className="text-xs text-zinc-400">{selectedCert.issuer} • {selectedCert.date}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
