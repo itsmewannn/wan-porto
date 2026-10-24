@@ -1,29 +1,36 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Najwan Zalfa Hasibuan — Futuristic Portfolio</title>
   
-  <!-- Tailwind CSS & React CDN -->
+  <!-- Tailwind CSS & React 18 CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     body {
       background-color: #08080a;
       color: #f4f4f5;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       overflow-x: hidden;
     }
     @keyframes idleSwing {
-      0%, 100% { transform: perspective(900px) rotateZ(-1.8deg) rotateX(1deg) rotateY(-2deg); }
-      50% { transform: perspective(900px) rotateZ(1.8deg) rotateX(-1deg) rotateY(2deg); }
+      0%, 100% {
+        transform: perspective(900px) rotateZ(-2deg) rotateX(1.2deg) rotateY(-2.5deg);
+      }
+      50% {
+        transform: perspective(900px) rotateZ(2deg) rotateX(-1.2deg) rotateY(2.5deg);
+      }
     }
     .lanyard-idle {
-      animation: idleSwing 4.5s ease-in-out infinite;
+      animation: idleSwing 4.2s ease-in-out infinite;
     }
   </style>
 </head>
@@ -34,7 +41,21 @@
     const { useState, useEffect, useRef } = React;
 
     /* =========================================================================
-       1. PORTFOLIO DATA (NAJWAN ZALFA HASIBUAN)
+       1. SUPABASE CLIENT INITIALIZATION
+       ========================================================================= */
+    const SUPABASE_URL = "https://jvqteiibipmzoqrxbmnb.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_m2rxhLMCNZ0xKs6UfA-9TA_tmqgW4mh";
+    let supabaseClient = null;
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch (err) {
+      console.warn("Supabase initialization error:", err);
+    }
+
+    /* =========================================================================
+       2. STATIC BASELINE PORTFOLIO DATA (CV NAJWAN ZALFA HASIBUAN)
        ========================================================================= */
     const PORTFOLIO_DATA = {
       personal: {
@@ -108,18 +129,24 @@
         }
       ],
 
-      projects: [
+      defaultProjects: [
         {
           id: 'pawangvolt',
           title: 'Pawangvolt: Smart Residential Energy Management System',
           year: '2026',
           role: 'UI/UX Designer',
+          category: 'UI/UX & Smart IoT',
           shortDesc: 'Perancangan antarmuka sistem monitoring energi rumah tangga berbasis IoT secara real-time dengan estimasi tagihan berkala dan peringatan beban berlebih.',
-          overview: 'Pawangvolt adalah inovasi sistem manajemen energi residensial cerdas berbasis Internet of Things (IoT) yang dirancang untuk membantu penghuni rumah memantau konsumsi daya listrik secara real-time.',
+          overview: 'Pawangvolt adalah inovasi sistem manajemen energi residensial cerdas berbasis Internet of Things (IoT) yang dirancang untuk membantu penghuni rumah memantau konsumsi daya listrik secara real-time, memproyeksikan estimasi biaya tagihan listrik bulanan, serta memberikan peringatan dini ketika terjadi lonjakan beban berlebih (overload).',
           problem: 'Banyak pengguna rumah tangga kesulitan memantau penggunaan daya listrik harian secara transparan dan sering mengalami pemutusan arus mendadak akibat beban listrik berlebih.',
-          solution: 'Merancang antarmuka dashboard UI/UX yang bersih, intuitif, dan responsif untuk memvisualisasikan metrik tegangan/arus secara real-time.',
-          keyFeatures: ['Dashboard Monitoring Konsumsi Energi IoT Real-Time', 'Fitur Estimasi Tagihan Listrik Berkala', 'Sistem Peringatan Dini Beban Berlebih'],
-          technologies: ['UI/UX Design', 'Figma', 'Smart Energy Concept', 'IoT Dashboard UX'],
+          solution: 'Merancang antarmuka dashboard UI/UX yang bersih, intuitif, dan responsif untuk memvisualisasikan metrik tegangan/arus secara real-time serta sistem notifikasi darurat.',
+          keyFeatures: [
+            'Dashboard Monitoring Konsumsi Energi IoT Real-Time',
+            'Fitur Estimasi Tagihan Listrik Berkala & Riwayat Pemakaian',
+            'Sistem Peringatan Dini Beban Berlebih (Overload Alert)',
+            'Desain Antarmuka Modern dengan Visualisasi Data Intuitif'
+          ],
+          technologies: ['UI/UX Design', 'Figma', 'Smart Energy Concept', 'IoT Dashboard UX', 'System Flowchart'],
           thumbnail: 'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1000&q=80'
         },
         {
@@ -127,11 +154,17 @@
           title: 'Sistem Antrean Digital Servis Kendaraan Berbasis C++',
           year: '2026',
           role: 'Technical Researcher & Logic Designer',
+          category: 'C++ & Data Structures',
           shortDesc: 'Perancangan logika algoritma, flowchart sistem, dan analisis efisiensi memori dinamis menggunakan struktur data Single Linked List berprinsip FIFO.',
-          overview: 'Proyek riset teknis dan perancangan logika pemrograman menggunakan bahasa C++ untuk menangani manajemen antrean layanan bengkel/servis kendaraan secara digital.',
-          problem: 'Pencatatan antrean servis kendaraan secara manual sering memicu pemborosan memori atau keterbatasan kapasitas saat terjadi lonjakan jumlah kendaraan.',
-          solution: 'Mengimplementasikan struktur data dinamis Single Linked List dengan prinsip First-In, First-Out (FIFO) di C++.',
-          keyFeatures: ['Implementasi Struktur Data Single Linked List FIFO', 'Manajemen Alokasi Memori Dinamis (Pointer & Node)', 'Perancangan Flowchart Logika Sistem'],
+          overview: 'Proyek riset teknis dan perancangan logika pemrograman menggunakan bahasa C++ untuk menangani manajemen antrean layanan bengkel/servis kendaraan secara digital dengan prinsip First-In, First-Out (FIFO).',
+          problem: 'Pencatatan antrean servis kendaraan secara manual maupun array statis sering memicu pemborosan memori atau keterbatasan kapasitas saat terjadi lonjakan jumlah kendaraan.',
+          solution: 'Mengimplementasikan struktur data dinamis Single Linked List dengan prinsip First-In, First-Out (FIFO) di C++ beserta perancangan flowchart sistem menyeluruh.',
+          keyFeatures: [
+            'Implementasi Struktur Data Single Linked List FIFO',
+            'Manajemen Alokasi Memori Dinamis (Pointer & Node Management)',
+            'Perancangan Flowchart Logika Sistem & Analisis Efisiensi Memori',
+            'Mitigasi Lonjakan Antrean Data Servis Kendaraan Secara Terstruktur'
+          ],
           technologies: ['C++', 'Data Structures', 'Single Linked List', 'FIFO Queue Logic', 'System Flowcharting'],
           thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1000&q=80'
         }
@@ -144,7 +177,7 @@
           issuer: 'Language Development Center (LDC) — IT-PLN',
           date: 'April 2026',
           badge: 'Score: 84 / Level B1',
-          description: 'Sertifikasi standardisasi kemampuan Bahasa Inggris akademik dan profesional.',
+          description: 'Sertifikasi standardisasi kemampuan Bahasa Inggris akademik dan profesional di Institut Teknologi PLN (Skor 84 / CEFR Level B1).',
           image: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=900&q=80'
         },
         {
@@ -159,10 +192,10 @@
         {
           id: 'cert-blockshield',
           title: 'Workshop Crafting the Blockshield: Blockchain Security',
-          issuer: 'Cybersecurity Workshop',
+          issuer: 'Cybersecurity & Blockchain Infrastructure Workshop',
           date: '2026',
           badge: 'Peserta',
-          description: 'Eksplorasi teknis mengenai infrastruktur terdesentralisasi dan keamanan blockchain.',
+          description: 'Eksplorasi teknis mengenai infrastruktur terdesentralisasi dan keamanan jaringan blockchain.',
           image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=900&q=80'
         },
         {
@@ -171,7 +204,7 @@
           issuer: 'Computer Vision Workshop',
           date: '2026',
           badge: 'Peserta',
-          description: 'Pengembangan wawasan teknis terkait sistem pemrosesan visual real-time.',
+          description: 'Pengembangan wawasan teknis terkait sistem pemrosesan visual real-time dan computer vision.',
           image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=900&q=80'
         }
       ],
@@ -180,10 +213,10 @@
         {
           id: 'award-karate',
           title: 'Juara 2 (Medali Perak) — Mahasiswa Kumite -67 Kg Putra',
-          organizer: 'Kejurnas Karate Budi Luhur University (PB FORKI)',
+          organizer: 'Kejurnas Karate Budi Luhur University Championship (PB FORKI)',
           date: 'Februari 2026',
-          badge: 'Silver Medal',
-          description: 'Meraih medali perak tingkat Nasional pada kategori Mahasiswa Kumite -67 Kg Putra.',
+          badge: 'Silver Medal Nasional',
+          description: 'Meraih medali perak tingkat Nasional pada kategori Mahasiswa Kumite -67 Kg Putra di bawah naungan PB FORKI.',
           image: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=900&q=80'
         },
         {
@@ -192,7 +225,7 @@
           organizer: 'Duta Muda Kebudayaan Sumatera Utara',
           date: '2024',
           badge: 'Top 5 Finalist',
-          description: 'Terpilih sebagai Top 5 Duta Muda Kebudayaan Sumatera Utara dan Koordinator Pengabdian.',
+          description: 'Terpilih sebagai Top 5 Duta Muda Kebudayaan Sumatera Utara dan Koordinator Program Pengabdian Masyarakat.',
           image: 'https://images.unsplash.com/photo-1531545514256-b1400bc00f31?auto=format&fit=crop&w=900&q=80'
         }
       ],
@@ -204,15 +237,19 @@
         { name: 'Figma', category: 'Design & Prototyping', badge: 'FG', color: '#FB7185' },
         { name: 'System Flowchart', category: 'Architecture & Logic', badge: 'FLOW', color: '#34D399' },
         { name: 'Smart Energy IoT', category: 'Domain Concept', badge: 'IoT', color: '#FBBF24' },
+        { name: 'AI Agents', category: 'Workshop & Exploration', badge: 'AI', color: '#A78BFA' },
+        { name: 'Blockchain Security', category: 'Workshop & Exploration', badge: 'SEC', color: '#2DD4BF' },
         { name: 'Public Speaking', category: 'Leadership & Soft Skill', badge: 'COMM', color: '#F8FAFC' },
-        { name: 'English (CEFR B1)', category: 'BEES Score: 84', badge: 'B1', color: '#60A5FA' }
+        { name: 'Analytical Thinking', category: 'Problem Solving', badge: 'LOGIC', color: '#94A3B8' },
+        { name: 'English (CEFR B1)', category: 'BEES Score: 84 (IT-PLN)', badge: 'B1', color: '#60A5FA' },
+        { name: 'Team Leadership', category: 'Organizational Skill', badge: 'LEAD', color: '#E2E8F0' }
       ],
 
       initialComments: [
         {
           id: 'c-pinned',
           name: 'Najwan Zalfa H',
-          text: 'Terima kasih sudah mampir di portfolio saya! Silakan tinggalkan pesan atau sapaan di bawah.',
+          text: 'Terima kasih sudah mampir di portfolio saya! Silakan tinggalkan pesan, diskusi proyek UI/UX, sistem informasi, atau sapaan di bawah.',
           pinned: true,
           likes: 5,
           likedByMe: false,
@@ -258,7 +295,7 @@
     `);
 
     /* =========================================================================
-       2. INTRO SCREEN COMPONENT
+       3. INTRO SCREEN COMPONENT
        ========================================================================= */
     function IntroScreen({ onComplete }) {
       const [progress, setProgress] = useState(0);
@@ -283,8 +320,15 @@
 
       return (
         <div className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#050507] transition-all duration-500 ${exiting ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
+          <div className="flex items-center gap-4 mb-7">
+            {['</>', '👤', '🌐'].map((ico, idx) => (
+              <div key={idx} className="w-11 h-11 rounded-full bg-white/[0.04] border border-white/15 flex items-center justify-center text-xs font-mono text-zinc-200 shadow-[0_0_25px_rgba(255,255,255,0.08)]">
+                {ico}
+              </div>
+            ))}
+          </div>
           <div className="text-center px-6">
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-wider text-white">Welcome To My</h1>
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-wider text-white">Welcome to my</h1>
             <h2 className="mt-2 text-3xl sm:text-5xl md:text-6xl font-black tracking-wider bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">Portfolio Website</h2>
             <p className="mt-5 font-mono text-xs sm:text-sm tracking-[0.25em] text-zinc-400">{PORTFOLIO_DATA.personal.domain}</p>
             <div className="mt-7 w-56 sm:w-64 mx-auto">
@@ -292,7 +336,7 @@
                 <div className="h-full bg-white transition-all duration-75" style={{ width: `${progress}%` }} />
               </div>
               <div className="mt-2 flex items-center justify-between text-[11px] font-mono text-zinc-500">
-                <span>LOADING</span>
+                <span>INITIALIZING</span>
                 <span className="text-zinc-300">{progress}%</span>
               </div>
             </div>
@@ -305,7 +349,7 @@
     }
 
     /* =========================================================================
-       3. INTERACTIVE 3D HANGING LANYARD ID CARD (SWING & TILT PHYSICS)
+       4. INTERACTIVE 3D HANGING LANYARD ID CARD
        ========================================================================= */
     function HangingLanyardCard({ avatarSrc, isMonochrome, onToggleMonochrome, onUploadClick }) {
       const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, swingZ: 0, translateY: 0 });
@@ -340,7 +384,6 @@
 
       return (
         <div className="relative flex flex-col items-center select-none pt-0">
-          {/* Interactive Lanyard Assembly Hanging from Top Origin */}
           <div
             className={`flex flex-col items-center origin-top cursor-grab active:cursor-grabbing ${
               !isHovered ? 'lanyard-idle' : 'transition-transform duration-150 ease-out'
@@ -359,7 +402,7 @@
             onTouchMove={handleTouchMove}
             onTouchEnd={handlePointerLeave}
           >
-            {/* Vertical Black Strap with "ID CARD" & "IT-PLN" text */}
+            {/* Lanyard Strap */}
             <div className="w-7 h-28 sm:h-36 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 border-x border-white/15 flex flex-col items-center justify-around py-2 shadow-xl">
               <span className="text-[8px] font-mono tracking-[0.25em] text-zinc-400 -rotate-90 whitespace-nowrap">
                 ID CARD
@@ -369,16 +412,14 @@
               </span>
             </div>
 
-            {/* Lanyard Metal Clip & Holder */}
+            {/* Metal Clips */}
             <div className="w-10 h-3 rounded-sm bg-zinc-800 border border-white/20 shadow-md" />
             <div className="w-4 h-4 rounded-b-md bg-zinc-700 border-x border-b border-white/25 -mt-0.5" />
 
-            {/* White-Framed ID Card Badge */}
+            {/* Badge Card Frame */}
             <div className="relative -mt-1 w-64 sm:w-72 rounded-2xl bg-zinc-100 p-3 pt-4 shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_35px_rgba(255,255,255,0.08)] border border-white transition-shadow duration-300">
-              {/* Card Slot Punch Hole at Top Center */}
               <div className="w-12 h-2.5 mx-auto mb-3 rounded-full bg-zinc-900 border border-zinc-400/40" />
 
-              {/* Portrait Image Container */}
               <div className="relative w-full h-72 sm:h-80 rounded-xl overflow-hidden bg-zinc-950 group">
                 <img
                   src={avatarSrc}
@@ -388,7 +429,6 @@
                   } ${isHovered ? 'scale-105' : 'scale-100'}`}
                 />
 
-                {/* Dynamic Glare Reflection on Tilt */}
                 <div
                   className="absolute inset-0 pointer-events-none transition-opacity duration-300"
                   style={{
@@ -397,7 +437,6 @@
                   }}
                 />
 
-                {/* Bottom Vignette inside Card */}
                 <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-3.5 flex flex-col justify-end">
                   <p className="font-mono text-[10px] tracking-[0.2em] text-zinc-300 uppercase">
                     INFORMATION SYSTEMS
@@ -407,7 +446,6 @@
                   </h3>
                 </div>
 
-                {/* Hover Action Overlay to Upload Photo or Toggle B&W Filter */}
                 <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <button
                     type="button"
@@ -434,7 +472,6 @@
             </div>
           </div>
 
-          {/* Interactive Helper Buttons Below Lanyard */}
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
             <button
               type="button"
@@ -456,7 +493,7 @@
     }
 
     /* =========================================================================
-       4. MAIN APP COMPONENT
+       5. MAIN APPLICATION COMPONENT
        ========================================================================= */
     function App() {
       const [showIntro, setShowIntro] = useState(true);
@@ -464,6 +501,12 @@
       const [activeTab, setActiveTab] = useState('projects');
       const [selectedProject, setSelectedProject] = useState(null);
       const [selectedCert, setSelectedCert] = useState(null);
+      const [showResumeModal, setShowResumeModal] = useState(false);
+
+      // Projects Dynamic State (Supabase + Local Fallback)
+      const [projectsList, setProjectsList] = useState(PORTFOLIO_DATA.defaultProjects);
+      const [dbStatus, setDbStatus] = useState('Connecting to Supabase...');
+
       const [avatarSrc, setAvatarSrc] = useState(() => {
         try {
           return localStorage.getItem('najwan_cv_avatar') || STUDIO_PORTRAIT_FALLBACK;
@@ -480,7 +523,60 @@
 
       const [comments, setComments] = useState(PORTFOLIO_DATA.initialComments);
       const [commentForm, setCommentForm] = useState({ name: '', text: '' });
+      const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
 
+      // Fetch dynamic projects from Supabase
+      useEffect(() => {
+        async function fetchSupabaseProjects() {
+          if (!supabaseClient) {
+            setDbStatus('Supabase Standby (Local Data)');
+            return;
+          }
+          try {
+            const { data, error } = await supabaseClient
+              .from('projects')
+              .select('*')
+              .order('id', { ascending: false });
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+              const formatted = data.map((item) => ({
+                id: item.id || `sp-${Math.random()}`,
+                title: item.title,
+                year: '2026',
+                role: item.category || 'Developer',
+                category: item.category || 'Technical Project',
+                shortDesc: item.description,
+                overview: item.description,
+                problem: 'Proyek ditambahkan langsung secara dinamis melalui portal database Supabase.',
+                solution: 'Implementasi antarmuka dan logika sistem yang terintegrasi secara otomatis ke web.',
+                keyFeatures: [
+                  'Dynamic Database Real-Time Synchronization',
+                  'Cloud-Hosted Asset Integration',
+                  'Continuous Deployment via Vercel'
+                ],
+                technologies: [item.category || 'Web', 'Supabase', 'Live Database'],
+                thumbnail: item.image_url || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80',
+                demoUrl: item.demo_url
+              }));
+
+              // Merge Supabase entries with the 2 default foundational projects
+              setProjectsList([...formatted, ...PORTFOLIO_DATA.defaultProjects]);
+              setDbStatus(`Live (${formatted.length} Dynamic + 2 Core)`);
+            } else {
+              setDbStatus('Live (Connected • 0 Rows, Using Core Projects)');
+            }
+          } catch (err) {
+            console.warn('Fetch Supabase error:', err);
+            setDbStatus('Connected (Offline Fallback)');
+          }
+        }
+
+        fetchSupabaseProjects();
+      }, []);
+
+      // Typewriter Role Loop
       useEffect(() => {
         const roles = PORTFOLIO_DATA.personal.typewriterRoles;
         const currentFull = roles[roleIdx % roles.length];
@@ -512,7 +608,16 @@
 
       const scrollTo = (id) => {
         setSelectedProject(null);
+        setActiveSection(id);
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      const handleContactSubmit = (e) => {
+        e.preventDefault();
+        if (!contactForm.name || !contactForm.email || !contactForm.message) return;
+        const subject = encodeURIComponent(`Pesan Portfolio dari ${contactForm.name}`);
+        const body = encodeURIComponent(`Halo Najwan,\n\nNama: ${contactForm.name}\nEmail: ${contactForm.email}\n\nPesan:\n${contactForm.message}`);
+        window.open(`mailto:${PORTFOLIO_DATA.personal.email}?subject=${subject}&body=${body}`, '_blank');
       };
 
       return (
@@ -532,10 +637,18 @@
           {/* NAVBAR */}
           <header className="fixed top-4 inset-x-0 z-40 px-4">
             <div className="max-w-6xl mx-auto h-14 px-5 rounded-2xl bg-zinc-950/80 backdrop-blur-xl border border-white/10 flex items-center justify-between shadow-2xl">
-              <span className="font-mono text-sm font-bold text-white">{PORTFOLIO_DATA.personal.brand}</span>
+              <button onClick={() => scrollTo('home')} className="font-mono text-sm font-bold text-white tracking-wider">
+                {PORTFOLIO_DATA.personal.brand}
+              </button>
               <nav className="flex items-center gap-6">
                 {['home', 'about', 'portfolio', 'contact'].map((id) => (
-                  <button key={id} onClick={() => scrollTo(id)} className={`text-xs uppercase font-medium transition ${activeSection === id ? 'text-white font-bold' : 'text-zinc-400 hover:text-white'}`}>
+                  <button
+                    key={id}
+                    onClick={() => scrollTo(id)}
+                    className={`text-xs uppercase font-medium transition ${
+                      activeSection === id ? 'text-white font-bold underline underline-offset-8' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
                     {id}
                   </button>
                 ))}
@@ -543,72 +656,138 @@
             </div>
           </header>
 
-          <main className="max-w-6xl mx-auto px-4 pt-28 pb-20 space-y-32">
+          <main className="relative z-10 max-w-6xl mx-auto px-4 pt-28 pb-20 space-y-32">
             {/* HERO SECTION */}
-            <section id="home" className="min-h-[80vh] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <section id="home" className="min-h-[82vh] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
               <div className="lg:col-span-7 space-y-6">
                 <span className="font-mono text-xs tracking-widest text-zinc-400">{PORTFOLIO_DATA.personal.statusBadge}</span>
                 <div className="space-y-1">
-                  <h1 className="text-4xl sm:text-6xl font-black text-white uppercase">{PORTFOLIO_DATA.personal.heroTitleLine1}</h1>
-                  <h2 className="text-4xl sm:text-6xl font-black bg-gradient-to-r from-white via-zinc-300 to-zinc-500 bg-clip-text text-transparent uppercase">{PORTFOLIO_DATA.personal.heroTitleLine2}</h2>
+                  <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white uppercase leading-none">
+                    {PORTFOLIO_DATA.personal.heroTitleLine1}
+                  </h1>
+                  <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black bg-gradient-to-r from-white via-zinc-300 to-zinc-500 bg-clip-text text-transparent uppercase leading-none">
+                    {PORTFOLIO_DATA.personal.heroTitleLine2}
+                  </h2>
                 </div>
-                <div className="h-8 flex items-center text-lg text-zinc-200 font-mono">
+                <div className="h-8 flex items-center text-lg sm:text-2xl text-zinc-200 font-light">
                   <span>{typedRole}</span>
-                  <span className="ml-1 w-2 h-6 bg-white animate-pulse" />
+                  <span className="ml-1.5 w-[2px] h-6 bg-white animate-pulse" />
                 </div>
-                <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">{PORTFOLIO_DATA.personal.heroBio}</p>
+                <p className="text-sm sm:text-base text-zinc-400 max-w-xl leading-relaxed">{PORTFOLIO_DATA.personal.heroBio}</p>
                 <div className="flex flex-wrap gap-2 pt-2">
                   {PORTFOLIO_DATA.personal.heroPills.map(p => (
-                    <span key={p} className="px-3 py-1 rounded-full bg-white/5 border border-white/15 font-mono text-xs text-zinc-300">{p}</span>
+                    <span key={p} className="px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/15 font-mono text-xs text-zinc-300">{p}</span>
                   ))}
+                </div>
+                <div className="pt-3 space-y-1 font-mono text-xs text-zinc-500">
+                  <p>&gt; explore my academic &amp; technical work below</p>
+                  <p>&gt; {PORTFOLIO_DATA.personal.university} • GPA {PORTFOLIO_DATA.personal.gpa}/4.00</p>
                 </div>
               </div>
               <div className="lg:col-span-5 flex justify-center">
-                <HangingLanyardCard avatarSrc={avatarSrc} isMonochrome={isMonochrome} onToggleMonochrome={() => setIsMonochrome(!isMonochrome)} onUploadClick={() => fileInputRef.current?.click()} />
+                <HangingLanyardCard
+                  avatarSrc={avatarSrc}
+                  isMonochrome={isMonochrome}
+                  onToggleMonochrome={() => setIsMonochrome(!isMonochrome)}
+                  onUploadClick={() => fileInputRef.current?.click()}
+                />
               </div>
             </section>
 
             {/* ABOUT SECTION */}
-            <section id="about" className="pt-10 border-t border-white/10 space-y-12">
+            <section id="about" className="pt-14 border-t border-white/10 space-y-12">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
                 <div className="lg:col-span-7 space-y-6">
                   <span className="font-mono text-xs tracking-widest text-zinc-400">ABOUT ME</span>
-                  <h2 className="text-4xl sm:text-5xl font-black text-white">{PORTFOLIO_DATA.personal.fullName}</h2>
+                  <h2 className="text-4xl sm:text-6xl font-black text-white leading-tight">
+                    <span className="block">{PORTFOLIO_DATA.personal.firstName}</span>
+                    <span className="block">{PORTFOLIO_DATA.personal.middleName}</span>
+                    <span className="block text-zinc-300">{PORTFOLIO_DATA.personal.lastName}</span>
+                  </h2>
                   <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">{PORTFOLIO_DATA.personal.aboutBio}</p>
+                  <div className="p-4 rounded-xl bg-white/[0.02] border-l-2 border-white/40 text-xs sm:text-sm italic text-zinc-300">
+                    {PORTFOLIO_DATA.personal.quote}
+                  </div>
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <button
+                      onClick={() => setShowResumeModal(true)}
+                      className="px-5 py-3 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-xs sm:text-sm transition"
+                    >
+                      📄 View / Print CV
+                    </button>
+                    <button
+                      onClick={() => scrollTo('portfolio')}
+                      className="px-5 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] text-white font-semibold text-xs sm:text-sm border border-white/15 transition"
+                    >
+                      ↗ View Projects
+                    </button>
+                  </div>
                 </div>
                 <div className="lg:col-span-5 flex flex-col items-center">
-                  <div className="w-64 h-64 rounded-full p-2 bg-gradient-to-b from-white/20 to-white/5 border border-white/15 overflow-hidden">
-                    <img src={avatarSrc} alt="Najwan" className={`w-full h-full object-cover object-top ${isMonochrome ? 'grayscale contrast-125' : ''}`} />
+                  <div className="w-64 h-64 sm:w-72 sm:h-72 rounded-full p-2 bg-gradient-to-b from-white/20 to-white/5 border border-white/15 overflow-hidden shadow-2xl">
+                    <img src={avatarSrc} alt="Najwan" className={`w-full h-full rounded-full object-cover object-top ${isMonochrome ? 'grayscale contrast-125' : ''}`} />
                   </div>
-                  <button onClick={() => fileInputRef.current?.click()} className="mt-4 px-4 py-2 rounded-xl bg-white/5 border border-white/15 text-xs font-mono text-zinc-300 hover:bg-white/10">Upload Foto CV</button>
+                  <button onClick={() => fileInputRef.current?.click()} className="mt-4 px-4 py-2 rounded-xl bg-white/5 border border-white/15 text-xs font-mono text-zinc-300 hover:bg-white/10">
+                    📷 Upload Foto CV
+                  </button>
                 </div>
               </div>
 
-              {/* EDUCATION TIMELINE */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6">
+              {/* 3 SUMMARY COUNTER CARDS */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {PORTFOLIO_DATA.stats.map(st => (
+                  <div
+                    key={st.id}
+                    onClick={() => {
+                      if (st.targetTab !== 'about-timeline') {
+                        setActiveTab(st.targetTab);
+                        scrollTo('portfolio');
+                      }
+                    }}
+                    className="cursor-pointer p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 hover:border-white/30 transition flex flex-col justify-between h-32"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs text-zinc-400">{st.label}</span>
+                      <span className="text-3xl font-black text-white">
+                        {st.id === 'projects' ? projectsList.length : st.value}
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-500">{st.sublabel}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* EDUCATION & EXPERIENCE TIMELINE */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
                 <div className="space-y-4">
-                  <h3 className="font-mono text-xs tracking-widest text-zinc-400 font-bold">RIWAYAT PENDIDIKAN</h3>
+                  <h3 className="font-mono text-xs tracking-widest text-zinc-400 font-bold">🎓 RIWAYAT PENDIDIKAN</h3>
                   {PORTFOLIO_DATA.education.map(edu => (
                     <div key={edu.id} className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
                       <div className="flex justify-between text-xs font-mono text-zinc-400">
                         <span>{edu.period}</span>
-                        <span className="text-white">{edu.highlight}</span>
+                        <span className="text-white font-bold">{edu.highlight}</span>
                       </div>
                       <h4 className="text-lg font-bold text-white">{edu.institution}</h4>
-                      <p className="text-xs text-zinc-300">{edu.degree}</p>
+                      <p className="text-xs text-zinc-300 font-medium">{edu.degree}</p>
+                      <p className="text-xs text-zinc-400 leading-relaxed pt-1">{edu.description}</p>
                     </div>
                   ))}
                 </div>
                 <div className="space-y-4">
-                  <h3 className="font-mono text-xs tracking-widest text-zinc-400 font-bold">ORGANISASI & PENGABDIAN</h3>
+                  <h3 className="font-mono text-xs tracking-widest text-zinc-400 font-bold">🤝 ORGANISASI & PENGABDIAN</h3>
                   {PORTFOLIO_DATA.experience.map(exp => (
                     <div key={exp.id} className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
                       <div className="flex justify-between text-xs font-mono text-zinc-400">
                         <span>{exp.period}</span>
-                        <span>{exp.badge}</span>
+                        <span className="px-2 py-0.5 rounded bg-white/10 text-white">{exp.badge}</span>
                       </div>
                       <h4 className="text-lg font-bold text-white">{exp.organization}</h4>
-                      <p className="text-xs text-zinc-300">{exp.role}</p>
+                      <p className="text-xs text-zinc-300 font-medium">{exp.role}</p>
+                      <ul className="space-y-1.5 pt-1">
+                        {exp.highlights.map((h, i) => (
+                          <li key={i} className="text-xs text-zinc-400 leading-relaxed">• {h}</li>
+                        ))}
+                      </ul>
                     </div>
                   ))}
                 </div>
@@ -616,34 +795,65 @@
             </section>
 
             {/* PORTFOLIO SECTION */}
-            <section id="portfolio" className="pt-10 border-t border-white/10 space-y-8">
+            <section id="portfolio" className="pt-14 border-t border-white/10 space-y-8">
               <div className="text-center max-w-xl mx-auto">
-                <h2 className="text-3xl sm:text-4xl font-black text-white">Portfolio Showcase</h2>
-                <p className="text-xs text-zinc-400 mt-2">Explore my academic & technical projects, certificates, and achievements.</p>
+                <h2 className="text-3xl sm:text-5xl font-black text-white">Portfolio Showcase</h2>
+                <p className="text-xs sm:text-sm text-zinc-400 mt-2">
+                  Explore my academic &amp; technical projects, certificates, national achievements, and technical skills.
+                </p>
+                <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full bg-white/[0.03] border border-white/15 text-[11px] font-mono text-zinc-400">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <span>Database: {dbStatus}</span>
+                </div>
               </div>
 
-              <div className="flex justify-center gap-2 p-1.5 rounded-2xl bg-white/[0.02] border border-white/10 max-w-xl mx-auto">
-                {['projects', 'certificates', 'awards', 'tech'].map((tab) => (
-                  <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2.5 px-5 rounded-xl text-xs font-semibold capitalize transition ${activeTab === tab ? 'bg-white/10 text-white border border-white/20' : 'text-zinc-400 hover:text-white'}`}>
-                    {tab}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1.5 rounded-2xl bg-white/[0.02] border border-white/10 max-w-2xl mx-auto">
+                {[
+                  { id: 'projects', label: 'Projects' },
+                  { id: 'certificates', label: 'Certificates' },
+                  { id: 'awards', label: 'Awards & Honors' },
+                  { id: 'tech', label: 'Tech Stack' }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`py-2.5 px-4 rounded-xl text-xs font-semibold transition ${
+                      activeTab === tab.id ? 'bg-white/10 text-white border border-white/20' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    {tab.label}
                   </button>
                 ))}
               </div>
 
               {activeTab === 'projects' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {PORTFOLIO_DATA.projects.map(proj => (
-                    <div key={proj.id} className="rounded-2xl bg-white/[0.02] border border-white/10 overflow-hidden flex flex-col">
-                      <div className="h-52 overflow-hidden bg-zinc-900">
-                        <img src={proj.thumbnail} alt={proj.title} className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500" />
+                  {projectsList.map(proj => (
+                    <div key={proj.id} className="rounded-2xl bg-white/[0.02] border border-white/10 hover:border-white/30 overflow-hidden flex flex-col transition group">
+                      <div className="h-56 overflow-hidden bg-zinc-900">
+                        <img 
+                          src={proj.thumbnail} 
+                          alt={proj.title} 
+                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition duration-500" 
+                          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80'; }}
+                        />
                       </div>
                       <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                         <div>
                           <span className="font-mono text-[10px] text-zinc-400">{proj.role} • {proj.year}</span>
                           <h3 className="text-lg font-bold text-white mt-1">{proj.title}</h3>
-                          <p className="text-xs text-zinc-400 mt-2 line-clamp-2">{proj.shortDesc}</p>
+                          <p className="text-xs text-zinc-400 mt-2 leading-relaxed">{proj.shortDesc}</p>
                         </div>
-                        <button onClick={() => setSelectedProject(proj)} className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white hover:text-black text-white font-semibold text-xs border border-white/15 transition">Details →</button>
+                        <div className="flex items-center justify-between pt-2">
+                          {proj.demoUrl && (
+                            <a href={proj.demoUrl} target="_blank" rel="noreferrer" className="text-xs font-mono text-cyan-400 hover:underline">
+                              Live Link ↗
+                            </a>
+                          )}
+                          <button onClick={() => setSelectedProject(proj)} className="ml-auto px-4 py-2 rounded-xl bg-white/5 hover:bg-white hover:text-black text-white font-semibold text-xs border border-white/15 transition">
+                            Details →
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -654,11 +864,15 @@
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {PORTFOLIO_DATA.certificates.map(cert => (
                     <div key={cert.id} onClick={() => setSelectedCert(cert)} className="cursor-pointer rounded-2xl bg-white/[0.02] border border-white/10 p-4 hover:border-white/30 transition">
-                      <div className="h-44 rounded-xl overflow-hidden bg-zinc-900 mb-3">
+                      <div className="h-48 rounded-xl overflow-hidden bg-zinc-900 mb-3">
                         <img src={cert.image} alt={cert.title} className="w-full h-full object-cover" />
                       </div>
-                      <p className="font-mono text-[11px] text-zinc-400">{cert.issuer} • {cert.date}</p>
+                      <div className="flex justify-between items-center text-[11px] font-mono text-zinc-400">
+                        <span>{cert.issuer}</span>
+                        <span className="text-white">{cert.badge}</span>
+                      </div>
                       <h4 className="text-base font-bold text-white mt-1">{cert.title}</h4>
+                      <p className="text-xs text-zinc-400 mt-1">{cert.description}</p>
                     </div>
                   ))}
                 </div>
@@ -669,7 +883,7 @@
                   {PORTFOLIO_DATA.awards.map(aw => (
                     <div key={aw.id} className="rounded-2xl bg-white/[0.02] border border-white/15 p-6 space-y-3">
                       <span className="px-3 py-1 rounded-full bg-white text-black font-mono text-[10px] font-bold">🏆 {aw.badge}</span>
-                      <h4 className="text-lg font-bold text-white mt-2">{aw.title}</h4>
+                      <h4 className="text-lg font-bold text-white pt-1">{aw.title}</h4>
                       <p className="text-xs text-zinc-300 font-medium">{aw.organizer} ({aw.date})</p>
                       <p className="text-xs text-zinc-400 leading-relaxed">{aw.description}</p>
                     </div>
@@ -678,40 +892,63 @@
               )}
 
               {activeTab === 'tech' && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
                   {PORTFOLIO_DATA.techStack.map(t => (
-                    <div key={t.name} className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 text-center">
-                      <div className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center font-mono text-sm font-black mb-2" style={{ backgroundColor: `${t.color}15`, color: t.color }}>{t.badge}</div>
+                    <div key={t.name} className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 text-center hover:border-white/30 transition">
+                      <div className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center font-mono text-sm font-black mb-2" style={{ backgroundColor: `${t.color}18`, color: t.color }}>
+                        {t.badge}
+                      </div>
                       <h4 className="text-xs font-bold text-white">{t.name}</h4>
-                      <p className="text-[10px] text-zinc-500">{t.category}</p>
+                      <p className="text-[10px] text-zinc-500 mt-0.5">{t.category}</p>
                     </div>
                   ))}
                 </div>
               )}
             </section>
 
-            {/* CONTACT SECTION */}
-            <section id="contact" className="pt-10 border-t border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <div className="lg:col-span-6 p-6 rounded-3xl bg-white/[0.02] border border-white/10 space-y-4">
+            {/* CONTACT & GUESTBOOK SECTION */}
+            <section id="contact" className="pt-14 border-t border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-5 p-6 rounded-3xl bg-white/[0.02] border border-white/10 space-y-4">
                 <h3 className="text-xl font-bold text-white">Hubungi Saya</h3>
-                <p className="text-xs text-zinc-400">Feel free to reach out for collaboration or inquiries.</p>
-                <div className="space-y-2 pt-2 text-xs font-mono text-zinc-300">
-                  <p>Email: {PORTFOLIO_DATA.personal.email}</p>
-                  <p>Instagram: {PORTFOLIO_DATA.personal.instagramHandle}</p>
-                  <p>Lokasi: {PORTFOLIO_DATA.personal.location}</p>
+                <p className="text-xs text-zinc-400">Feel free to reach out for internship, collaboration, or inquiries.</p>
+                <form onSubmit={handleContactSubmit} className="space-y-3">
+                  <input type="text" placeholder="Your Name" value={contactForm.name} onChange={e => setContactForm({...contactForm, name: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white" />
+                  <input type="email" placeholder="Your Email" value={contactForm.email} onChange={e => setContactForm({...contactForm, email: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white" />
+                  <textarea rows="3" placeholder="Your Message" value={contactForm.message} onChange={e => setContactForm({...contactForm, message: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white" />
+                  <button type="submit" className="w-full py-2.5 rounded-xl bg-white text-black font-bold text-xs">Send Message</button>
+                </form>
+                <div className="space-y-1.5 pt-3 border-t border-white/10 text-xs font-mono text-zinc-300">
+                  <p>📧 Email: {PORTFOLIO_DATA.personal.email}</p>
+                  <p>📸 Instagram: <a href={PORTFOLIO_DATA.personal.instagramUrl} target="_blank" rel="noreferrer" className="underline">{PORTFOLIO_DATA.personal.instagramHandle}</a></p>
+                  <p>📍 Domisili: {PORTFOLIO_DATA.personal.location}</p>
                 </div>
               </div>
-              <div className="lg:col-span-6 p-6 rounded-3xl bg-white/[0.02] border border-white/10 space-y-4">
-                <h3 className="text-xl font-bold text-white">Guestbook Comments</h3>
-                <div className="space-y-2">
+
+              <div className="lg:col-span-7 p-6 rounded-3xl bg-white/[0.02] border border-white/10 space-y-4">
+                <h3 className="text-xl font-bold text-white">Comments</h3>
+                <div className="space-y-2.5">
                   <input type="text" placeholder="Your Name" value={commentForm.name} onChange={e => setCommentForm({...commentForm, name: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white" />
                   <textarea placeholder="Your Comment" rows="2" value={commentForm.text} onChange={e => setCommentForm({...commentForm, text: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white" />
-                  <button onClick={() => { if(commentForm.name && commentForm.text) { setComments([{id: Date.now(), name: commentForm.name, text: commentForm.text, pinned:false, likes:0, timestamp:'Baru saja'}, ...comments]); setCommentForm({name:'', text:''}); }}} className="w-full py-2.5 rounded-xl bg-white text-black font-bold text-xs">Post Comment</button>
+                  <button
+                    onClick={() => {
+                      if (commentForm.name && commentForm.text) {
+                        setComments([comments[0], { id: Date.now(), name: commentForm.name, text: commentForm.text, pinned: false, likes: 0 }, ...comments.slice(1)]);
+                        setCommentForm({ name: '', text: '' });
+                      }
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white hover:text-black text-white font-bold text-xs border border-white/15 transition"
+                  >
+                    Post Comment
+                  </button>
                 </div>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
+                <div className="space-y-2.5 max-h-56 overflow-y-auto pt-2">
                   {comments.map(c => (
-                    <div key={c.id} className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
-                      <span className="font-bold text-white">{c.name}</span>: <span className="text-zinc-300">{c.text}</span>
+                    <div key={c.id} className="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs flex justify-between items-start">
+                      <div>
+                        <span className="font-bold text-white">{c.name}</span>
+                        {c.pinned && <span className="ml-2 px-2 py-0.5 rounded bg-white/10 font-mono text-[9px] text-zinc-300">📌 PINNED</span>}
+                        <p className="text-zinc-300 mt-1">{c.text}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -719,19 +956,30 @@
             </section>
           </main>
 
-          {/* PROJECT MODAL */}
+          {/* PROJECT DETAIL MODAL */}
           {selectedProject && (
             <div onClick={() => setSelectedProject(null)} className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-              <div onClick={e => e.stopPropagation()} className="max-w-2xl w-full rounded-2xl bg-[#0e0e12] border border-white/20 p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+              <div onClick={e => e.stopPropagation()} className="max-w-3xl w-full rounded-2xl bg-[#0e0e12] border border-white/20 p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-bold text-white">{selectedProject.title}</h3>
-                  <button onClick={() => setSelectedProject(null)} className="px-3 py-1 rounded-lg bg-white/10 text-xs">✕</button>
+                  <button onClick={() => setSelectedProject(null)} className="px-3.5 py-1.5 rounded-xl bg-white/10 text-xs font-mono">← Back</button>
+                  <span className="font-mono text-xs text-zinc-400">{selectedProject.role} • {selectedProject.year}</span>
                 </div>
-                <img src={selectedProject.thumbnail} alt="" className="w-full h-56 object-cover rounded-xl" />
-                <p className="text-xs text-zinc-300 leading-relaxed">{selectedProject.overview}</p>
-                <div className="space-y-1">
+                <h3 className="text-2xl font-black text-white">{selectedProject.title}</h3>
+                <img src={selectedProject.thumbnail} alt="" className="w-full h-64 object-cover rounded-xl border border-white/10" />
+                <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">{selectedProject.overview}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10">
+                    <h4 className="text-xs font-bold text-white uppercase mb-1">Masalah</h4>
+                    <p className="text-xs text-zinc-400 leading-relaxed">{selectedProject.problem}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10">
+                    <h4 className="text-xs font-bold text-white uppercase mb-1">Solusi</h4>
+                    <p className="text-xs text-zinc-300 leading-relaxed">{selectedProject.solution}</p>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
                   <h4 className="text-xs font-bold text-white uppercase tracking-wider">Key Features:</h4>
-                  {selectedProject.keyFeatures.map((f, i) => <p key={i} className="text-xs text-zinc-400">• {f}</p>)}
+                  {selectedProject.keyFeatures.map((f, i) => <p key={i} className="text-xs text-zinc-300">• {f}</p>)}
                 </div>
               </div>
             </div>
@@ -740,18 +988,53 @@
           {/* CERTIFICATE LIGHTBOX */}
           {selectedCert && (
             <div onClick={() => setSelectedCert(null)} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-              <div onClick={e => e.stopPropagation()} className="max-w-3xl w-full bg-[#0e0e12] border border-white/20 rounded-2xl overflow-hidden p-4 space-y-3">
+              <div onClick={e => e.stopPropagation()} className="max-w-3xl w-full bg-[#0e0e12] border border-white/20 rounded-2xl overflow-hidden p-5 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-mono text-xs text-zinc-400">{selectedCert.issuer} • {selectedCert.date}</span>
+                  <button onClick={() => setSelectedCert(null)} className="px-3 py-1 rounded-lg bg-white/10 text-xs">✕</button>
+                </div>
                 <img src={selectedCert.image} alt="" className="w-full max-h-[60vh] object-contain bg-black rounded-lg" />
-                <h3 className="text-base font-bold text-white">{selectedCert.title}</h3>
-                <p className="text-xs text-zinc-400">{selectedCert.issuer} • {selectedCert.date}</p>
+                <h3 className="text-lg font-bold text-white">{selectedCert.title}</h3>
+                <p className="text-xs text-zinc-300">{selectedCert.description}</p>
               </div>
             </div>
           )}
+
+          {/* PRINTABLE CV MODAL */}
+          {showResumeModal && (
+            <div onClick={() => setShowResumeModal(false)} className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+              <div onClick={e => e.stopPropagation()} className="max-w-2xl w-full rounded-2xl bg-[#0e0e12] border border-white/20 p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                  <h3 className="text-xl font-black text-white">CV — {PORTFOLIO_DATA.personal.fullName}</h3>
+                  <div className="flex gap-2">
+                    <button onClick={() => window.print()} className="px-3 py-1.5 rounded-lg bg-white text-black font-bold text-xs">🖨️ Print PDF</button>
+                    <button onClick={() => setShowResumeModal(false)} className="px-3 py-1.5 rounded-lg bg-white/10 text-xs">✕</button>
+                  </div>
+                </div>
+                <p className="text-xs text-zinc-300 leading-relaxed">{PORTFOLIO_DATA.personal.aboutBio}</p>
+                <div className="space-y-2 text-xs text-zinc-300">
+                  <p className="font-bold text-white uppercase">Pendidikan:</p>
+                  {PORTFOLIO_DATA.education.map(ed => (
+                    <p key={ed.id}>• <b>{ed.institution}</b> — {ed.degree} ({ed.highlight}, {ed.period})</p>
+                  ))}
+                  <p className="font-bold text-white uppercase pt-2">Proyek Akademik & Teknis:</p>
+                  {projectsList.map(pr => (
+                    <p key={pr.id}>• <b>{pr.title}</b> ({pr.role}, {pr.year}) — {pr.shortDesc}</p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <footer className="relative z-10 border-t border-white/10 py-8 px-4 text-center text-xs text-zinc-500 font-mono">
+            © {new Date().getFullYear()} {PORTFOLIO_DATA.personal.fullName} • {PORTFOLIO_DATA.personal.university}
+          </footer>
         </div>
       );
     }
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
   </script>
 </body>
 </html>
